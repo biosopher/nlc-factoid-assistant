@@ -1,0 +1,99 @@
+doctype html
+html
+    head
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')
+        meta(charset="utf-8")
+
+        link(href="stylesheets/travel.css" type="text/css" rel="stylesheet")
+        link(href="stylesheets/ladda/ladda-themeless.min.css" type="text/css" rel="stylesheet")
+
+        title Watson #{demoName}
+
+    body.bodyBackground
+        span#isTravelDemo.hidden #{isTravelDemo}
+
+        div#exampleQuestionsDiv
+
+        span#betaBanner
+            a(href="http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/question-answer.html" target="_blank") IBM Beta
+        div.clearBoth
+
+        div#searchInputWrapper.searchInputWrapperNoAnswer
+            div#appHeading.appHeading
+                img#watsonImg.watsonImg(src="stylesheets/img/watson_logo.png")
+                span IBM
+                span#watsonHeading &nbsp;Watson
+                span#demoName &nbsp;#{demoName} Advisor
+            div#infoBubble #{subheading}
+
+            div#searchDiv.searchDiv
+                form#questionForm(role="form" target="form-iframe")
+                    input#questionInput.questionInput(type="text" placeholder="What's your question?" x-webkit-speech="x-webkit-speech")
+                    button#askButton.btn.btn-lg.btn-primary.ladda-button(type="submit" value="ask" data-style="expand-right" data-spinner-color="#003F69")
+                        span.ladda-label ASK
+
+            iframe(name="form-iframe" src="about:blank" class="hidden")
+
+        div#bottomDetailsDiv.bottomDetailsDivHasNoDBpedia.hidden
+            div#answersTable
+                div#answersWrapper
+                div#dbPediaDiv.dbPediaDivHidden
+
+            div#disclaimer
+                <b>Disclaimer</b>
+                br
+                span This data set is only trained to answer specific kinds of questions. Keep checking back as we expand both the content and types of questions supported.
+                br
+                span Currently, only Google Chrome or Apple Safari support speech synthesis.
+
+            div#jsonDownloadLinks
+                a#jsonSentToWatsonLink(href="#") Show Question JSON Sent
+                pre#jsonSentToWatson.hidden
+                div#jsonReceivedFromWatsonDiv
+                    a#jsonReceivedFromWatsonLink(href="#") Show Response JSON Received
+                    pre#jsonReceivedFromWatson.hidden
+
+
+            div#copyright
+                span &copy;2014 IBM
+
+        <!-- Sample Answers -->
+        p#hiddenExampleQuestions.hidden #{exampleQuestions}
+
+        <!-- Answer Template -->
+        div#answerTemplate.hidden.answerDiv
+            div.upperAnswerRow
+                div.answerTextDiv
+                    div.answerText
+                div.feedbackOptions
+                    div#feedbackYesDiv.feedbackOption
+                        a#feedbackYesLink.feedbackLinkUnselected(href="#") Useful
+                    div#feedbackNoDiv.feedbackOption
+                        a#feedbackNoLink.feedbackLinkUnselected(href="#") Not Useful
+                    div#feedbackPartialDiv.feedbackOption
+                        a#feedbackPartialLink.feedbackLinkUnselected(href="#") Neutral
+                    div#feedbackCommentDiv.feedbackOption
+                        a#feedbackCommentLink.hidden.feedbackLinkUnselected(href="#") Comment
+            div.bottomAnswerRow
+                img.playSpeechImage.hidden(src="stylesheets/img/button_play-white.png")
+                a.moreLink(href="#") more...
+                div.evidenceDiv.hidden
+                    div.confidenceDiv
+                        span.confidenceValue 50% confidence
+                    div.pipelineDiv
+                        span.pipelineValue xxxxx
+                div.clearBoth
+
+        <!-- Factoid Evidence Template -->
+        div#factoidEvidenceTemplate.factoidanswersTable.hidden
+            div.factoidEvidenceTitleDiv
+                span.factoidEvidenceTitleHeading 1:
+                span.factoidEvidenceTitle xxxx
+            div.factoidEvidenceText xxxxx
+            a.factoidEvidenceDocumentLink(href="",target="_blank") Reference
+
+    script(src="javascript/ladda/spin.min.js" type="text/javascript")<!-- Button w/Loading Indicator -->
+    script(src="javascript/ladda/ladda.min.js" type="text/javascript")<!-- Button w/Loading Indicator -->
+    script(src="javascript/jquery/jquery-2.1.0.min.js" type="text/javascript")<!-- jQuery -->
+    script(src="javascript/travel.js" type="text/javascript")<!-- Watson Team JS -->
+    script(src="javascript/TextHighlighter.js" type="text/javascript") <!-- Watson Team JS -->

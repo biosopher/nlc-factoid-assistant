@@ -1,0 +1,422 @@
+/*
+   Licensed Materials - Property of IBM
+   Copyright IBM Corp. 2014  All Rights Reserved
+   US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+*/
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: HelveticaNeue, Helvetica, Arial, sans-serif;
+}
+
+body a {
+    text-decoration: none;
+}
+body div {
+    box-sizing: border-box;
+}
+.bodyBackground{
+    background-color: #008abf;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+#searchInputWrapper {
+    position: relative;
+    color:#ffffff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    margin-left: auto;
+    margin-right: auto;
+    padding:15px 15px 5px 30px;
+    border-radius:10px;
+    font-size:30px;
+    width: 800px;
+
+    pointer-events: none; /* Ensure user can click links behind the wrapper */
+}
+.searchInputWrapperNoAnswer {
+    margin-top:100px;
+}
+.searchInputWrapperAnswers {
+    margin-top:25px;
+}
+.appHeading {
+    margin-left: auto;
+    margin-right: auto;
+}
+#infoBubble
+{
+    position: relative;
+    width: 365px;
+    height: 50px;
+    padding-top: 15px;
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #17af4b;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    font-size:20px;
+    font-weight: normal;
+    text-align: center;
+}
+#infoBubble:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 0 25px 27px;
+    border-color: #17af4b transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    top: -27px;
+    left: 175px;
+}
+.watsonImg {
+    width:28px;
+    margin-right: 10px;
+}
+.watsonImgAnswers {
+    width:26px;
+    margin-right:5px;
+}
+#watsonHeading {
+    font-weight: bold;
+}
+#searchDiv {
+    margin-top:10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*** Question Input Placeholder ***/
+::-webkit-input-placeholder {
+    color:#50b6e1;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color:#50b6e1;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color:#50b6e1;
+}
+
+:-ms-input-placeholder {
+    color:#50b6e1;
+}
+#questionInput {
+    color:#fff;
+    padding: 5px;
+    border:solid 1px #82d1f5;
+    margin-bottom: 5px;
+    background-color : #1a98ca;
+    width:625px;
+    font-size: 14px;
+    line-height:1.8;
+    pointer-events: auto; /* Ensure user can select the input */
+}
+#askButton {
+    border:solid 1px #82d1f5;
+    background-color: #00b2ef;
+    background-repeat:no-repeat;
+    color:#fff;
+    font-size: 16px;
+    outline:none;
+    line-height: 30px;
+    width:100px;
+    pointer-events: auto; /* Ensure user can click button */
+}
+/***  Floating Questions ***/
+.exampleQuestionLink, .exampleQuestionLink:visited, .exampleQuestionLink:hover, .exampleQuestionLink:active {
+    /*color: #00b2ef;*/
+    font-size: 16px;
+    cursor: pointer;
+    position:abolute;
+}
+/***  Bottom Sections ***/
+#bottomDetailsDiv {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    color:#fff;
+
+    pointer-events: none; /* Ensure user can click links behind the wrapper */
+}
+.bottomDetailsDivHasDBpedia {
+    width:1000px;
+}
+.bottomDetailsDivNoDBpedia {
+    width:690px;
+}
+#copyright {
+    margin-top:5px;
+    text-align:center;
+    font-size: 10px;
+    color:#50b6e1;
+}
+/***  Answers Displayed ***/
+#answersTable {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    pointer-events: none; /* Ensure user can click links behind the wrapper */
+}
+#answersWrapper {
+    border-style: solid;
+    border-width: 0px 5px 0px 0px ;
+    border-color: #008abf;
+    font-size: 14px;
+    display: table-cell;
+    vertical-align:top;
+    pointer-events: none; /* Ensure user can click links behind the wrapper */
+}
+.highlitAnswer {
+    background-color: rgba(255,255,0,0.3);
+}
+/***  dbpedia ***/
+.dbPediaDivVisible {
+    background-color: #fff;
+    color:#000;
+    width:275px;
+    display: table-cell;
+}
+.dbPediaDivHidden {
+    width:0px; /* else display:table-cell isn't overriden & displays 1px on Chrome */
+    display: none;
+}
+.dbpediaImage {
+    width:300px;
+}
+.dbpediaName {
+    object-fit: cover;
+    width:290;
+    margin: 5px;
+    font-size: 14px;
+}
+.dbpediaComment {
+    object-fit: cover;
+    margin: 5px;
+    font-size: 14px;
+}
+
+/*** Answer Template ***/
+.answerDiv {
+    background-color: #fff;
+    margin-bottom:5px;
+    padding:10px;
+    color: #000;
+    display: table;
+    vertical-align: top;
+    pointer-events: auto; /* Ensure user can't click links behind the wrapper */
+}
+.upperAnswerRow {
+    display: table-row;
+}
+.answerTextDiv {
+    padding-bottom:10px;
+    display: table-cell;
+}
+.answerText {
+    margin-bottom:10px;
+    width:600px;
+}
+.bottomAnswerRow {
+    display: table-row;
+}
+.moreLink, .moreLink:visited, .moreLink:hover, .moreLink:active {
+    font-size: 13px;
+    color: #00c6f3;
+    cursor: pointer;
+}
+.evidenceDiv {
+    float: right;
+    font-size: 13px;
+    color: #c0c0c0;
+    text-align: right;
+}
+.feedbackOptions {
+    display: table-cell;
+    margin-left:10px;
+    margin-bottom:5px;
+    text-align: center;
+}
+.feedbackOption {
+    width:65px;
+}
+.feedbackDivSelected {
+    border:solid 1px #82d1f5;
+    background-color: #edf8fd;
+    padding-bottom:2px;
+}
+.feedbackLinkUnselected, .feedbackLinkUnselected:visited, .feedbackLinkUnselected:hover, .feedbackLinkUnselected:active {
+    font-size: 12px;
+    color: #00c6f3;
+    cursor: pointer;
+}
+
+.feedbackLinkSelected, .feedbackLinkSelected:visited, .feedbackLinkSelected:hover, .feedbackLinkSelected:active {
+    font-size: 12px;
+    color: #00c6f3;
+    cursor: pointer;
+}
+
+/** Disclaimer **/
+#disclaimer {
+    font-size: 10px;
+    padding:10px;
+    margin-top: 10px;
+    width:100%;
+    color:#000;
+    background-color: #dff3fc;
+}
+
+/** JSON download section **/
+#jsonDownloadLinks {
+    background-color: #dff3fc;
+    font-size: 10px;
+    padding:10px;
+    margin-top: 10px;
+    width:100%;
+}
+#jsonReceivedFromWatsonDiv {
+    margin-top:5px;
+    color: #000;
+}
+#jsonSentToWatson {
+    margin-top:5px;
+    color: #000;
+}
+#jsonReceivedFromWatson {
+    margin-top:5px;
+    color: #000;
+}
+#jsonSentToWatsonLink, #jsonSentToWatsonLink:visited, #jsonSentToWatsonLink:hover, #jsonSentToWatsonLink:active {
+    font-size: 11px;
+    color: #00c6f3;
+    cursor: pointer;
+}
+
+#jsonReceivedFromWatsonLink, #jsonReceivedFromWatsonLink:visited, #jsonReceivedFromWatsonLink:hover, #jsonReceivedFromWatsonLink:active {
+    font-size: 11px;
+    color: #00c6f3;
+    cursor: pointer;
+}
+
+/***  Common CSS ***/
+.boldTitle {
+    color: #000;
+    font-weight: bold;
+}
+.highlitSelection {
+  background-color: #e2f7ff;
+}
+.hidden {
+    display: none;
+}
+.visible {
+    display: block;
+}
+.inline {
+    display: inline;
+}
+pre {
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+.clearBoth {
+    clear:both;
+}
+
+/***  'Beta App' Ribbon Displayed in Upper-Right  ***/
+#betaBanner a {
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    font-family: arial, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 40px;
+    font-size: 1rem;
+    line-height: 2rem;
+    position: relative;
+    transition: 0.5s;
+}
+
+#betaBanner a:hover {
+    background: #c11;
+    color: #fff;
+}
+
+#betaBanner a::before,#betaBanner a::after {
+    content: "";
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 1px;
+    background: #fff;
+}
+
+#betaBanner a::after {
+    bottom: 1px;
+    top: auto;
+}
+
+/***  Screen Size-Based Adjustments ***/
+@media screen and (min-width:800px) {
+    #betaBanner {
+        position: fixed;
+        display: block;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+        z-index: 9999;
+    }
+    #betaBanner a {
+        width: 200px;
+        position: absolute;
+        top: 60px;
+        right: -60px;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+    }
+}
+
+@media (max-width: 800px) {
+
+}
+
+@media (max-width: 550px) {
+
+    #questionInput {
+        color:#000000;
+        padding: 5px;
+        margin-bottom: 5px;
+        font-size: 14px;
+        width:280px;
+    }
+    #askButton {
+        display: none;
+    }
+}
