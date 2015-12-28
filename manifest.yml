@@ -1,8 +1,23 @@
+declared-services:
+  factoid-dialog_service:
+    label: dialog
+    plan: standard
+  factoid-nlc_service:
+    label: natural_language_classifier
+    plan: standard
+  factoid-cloudant_service:
+    label: cloudantNoSQLDB
+    plan: Shared
+
 applications:
-- name: nlc-factoid-assistant
+- services:
+  - factoid-nlc_service
+  - factoid-dialog_service
+  - factoid-cloudant_service
+  name: nlc-factoid-assistant
   host: nlc-factoid-assistant
-  disk_quota: 512M
   command: node app.js
   path: .
   instances: 1
-  memory: 128M
+  memory: 512M
+

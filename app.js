@@ -1,8 +1,8 @@
 // Module dependencies
-var express = require('express'),
-    path = require('path'),
-    bodyParser = require('body-parser'),
-    errorHandler = require('error-handler');
+var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
+var errorHandler = require('error-handler');
 
 var config = {};
 var app = express();
@@ -25,7 +25,8 @@ app.all('*', function(req,res,next) {
 });
 
 // Initialize Watson
-config.watson = require('./routes/watson.js')(config,app);
+var WatsonUtils = require('./javascript/watson');
+config.watson = new WatsonUtils(app);
 
 // Setup routes
 var indexJS = require('./routes/index'); //Routes for AJAX callbacks

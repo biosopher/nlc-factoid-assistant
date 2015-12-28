@@ -1,30 +1,35 @@
-var cloudant = require('cloudant'),
-    bluemix     = require('../config/bluemix'),
-    extend      = require('util')._extend;
+var cloudant = require('cloudant');
+var bluemix  = require('../config/bluemix');
+var extend   = require('util')._extend;
 
 var CONVERSATIONS_DATABASE = 'ipa_conversations';
 
-function ConversationStore(config) {
+function ConversationStore(watson) {
 
     // If bluemix credentials (VCAP_SERVICES) are present then override the local credentials
-    var cloudantCredentials =  extend(config.credentials.cloudant, bluemix.getServiceCreds('cloudantNoSQLDB')); // VCAP_SERVICES
+    watson.config.cloudant =  extend(watson.config.cloudant, bluemix.getServiceCreds('cloudantNoSQLDB')); // VCAP_SERVICES
 
-    self.conversationsDB = null;
-    var cloudantService = cloudant({account:cloudantCredentials.username, password:cloudantCredentials.password});
-    cloudantService.db.list(function(err, allDbs) {
+    if (watson.config.cloudant.url.indexOf("http") >= 0) {
 
-        //destroyDatabase();
-        if(typeof allDbs != 'undefined'){
-            for (var i = 0; i < allDbs.length; i++) {
-                if (allDbs[0] == CONVERSATIONS_DATABASE) {
-                    self.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
-                    console.log('Cloudant database ready');
-                    return;
+        // Otherwise the use hasn't configured the app to track user text submissions.
+
+        this.conversationsDB = null;
+        var cloudantService = cloudant({account:watson.config.cloudant.username, password:watson.config.cloudant.password});
+        cloudantService.db.list(function(err, allDbs) {
+
+            //destroyDatabase();
+            if(typeof allDbs != 'undefined'){
+                for (var i = 0; i < allDbs.length; i++) {
+                    if (allDbs[0] == CONVERSATIONS_DATABASE) {
+                        this.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
+                        console.log('Cloudant database ready');
+                        return;
+                    }
                 }
             }
-        }
-        createDatabase();
-    });
+            createDatabase();
+        });
+    }
 }
 
 ConversationStore.prototype.storeConversation = function(conversationObj) {
@@ -32,9 +37,9 @@ ConversationStore.prototype.storeConversation = function(conversationObj) {
     // if{} here has two effects:
     // 1. Avoid errors if cloudant service not enabled
     // 2. database creation can take awhile first time app launches so prevent errors
-    if (self.conversationsDB) {
+    if (this.conversationsDB) {
         conversationObj._id = conversationObj.dialog_id + "_" + conversationObj.conversation_id;
-        self.conversationsDB.insert(conversationObj,function(err, body, header) {
+        this.conversationsDB.insert(conversationObj,function(err, body, header) {
             if (err) {
                 updateConversation(conversationObj);
             }else{
@@ -47,7 +52,7 @@ ConversationStore.prototype.storeConversation = function(conversationObj) {
 
 ConversationStore.prototype.updateConversation = function(conversationObj) {
 
-    self.conversationsDB.get(conversationObj._id,{ revs_info: true },function(err, body, header) {
+    this.conversationsDB.get(conversationObj._id,{ revs_info: true },function(err, body, header) {
         if (err) {
             console.log('conversationsDB.get failed', JSON.stringify(err));
             module.exports.storeConversation(conversationObj);
@@ -79,7 +84,7 @@ ConversationStore.prototype.createDatabase = function() {
         if (err) {
             console.log('Failure to create the cloudant database', JSON.stringify(err));
         } else {
-            self.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
+            this.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
             console.log('Created Cloudant database');
         }
     });
@@ -92,3 +97,5 @@ ConversationStore.prototype.destroyDatabase = function() {
     });
 }
 
+// Exported class
+module.exports = ConversationStore;

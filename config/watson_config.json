@@ -1,7 +1,8 @@
 {
     "nlc" : {
         // REQUIRED whether running locally or not
-        "classifier_name" : "CLASSIFIER NAME",
+        // "classifier_name" : "CLASSIFIER NAME",
+        "classifier_name" : "nlc_factoid",
 
         // OPTIONAL: Used when running the app locally and NOT on BLuemix
         "username": "LOCAL NLC SERVICE USERNAME",
