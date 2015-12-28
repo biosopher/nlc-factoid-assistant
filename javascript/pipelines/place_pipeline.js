@@ -1,8 +1,8 @@
 var Q = require('q');
-
+var RdfQuery = require('../pipelines/rdf_query');
 //************ Constructor **************//
 function PlacePipeline() {
-    this.RdfQuery = require('../pipelines/rdf_query');
+
 }
 
 PlacePipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
@@ -30,7 +30,7 @@ PlacePipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
         var answerText = requiredEntityTrait + " is Barack Obama's spouse.";
         deferred.resolve(answerText);
     } else if (requiredEntityTrait){
-        new this.RdfQuery().performQuery(dataLinks[0].dbpediaLink,requiredEntityTrait)
+        new RdfQuery().performQuery(dataLinks[0].dbpediaLink,requiredEntityTrait)
             .then(function(response) {
                 answerText = response;
             }, function(err) {

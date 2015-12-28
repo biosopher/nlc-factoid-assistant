@@ -2,6 +2,12 @@ var Q = require('q');
 var fs = require('fs');
 var strip_json_comments = require('strip-json-comments');
 
+// Service utils classes
+var ConversationStore = require('../javascript/conversation_store');
+var NlcUtils = require('../javascript/nlc-utils');
+var AlchemyApiUtils = require('../javascript/alchemyapi-utils');
+var Pipelines = require('../javascript/pipelines/pipelines');
+
 //************ Constructor **************//
 function WatsonUtils(app) {
 
@@ -16,18 +22,13 @@ function WatsonUtils(app) {
         } catch (err) {
             console.log("Unable to load local credentials.json:\n" + JSON.stringify(err));
         }
-
-        // Create Service utils classes
-        var ConversationStore = require('../javascript/conversation_store');
-        var NlcUtils = require('../javascript/nlc-utils');
-        var AlchemyApiUtils = require('../javascript/alchemyapi-utils');
-        var Pipelines = require('../javascript/pipelines/pipelines');
-
-        this.conversationStore = new ConversationStore(this);
-        this.nlcUtils = new NlcUtils(this);
-        this.alchemyUtils = new AlchemyApiUtils(this);
-        this.pipelines = new Pipelines();
     }
+
+    // Create Service utils classes
+    this.conversationStore = new ConversationStore(this);
+    this.nlcUtils = new NlcUtils(this);
+    this.alchemyUtils = new AlchemyApiUtils(this);
+    this.pipelines = new Pipelines();
 
     //************ Supported URL paths **************//
     var internalThis = this;

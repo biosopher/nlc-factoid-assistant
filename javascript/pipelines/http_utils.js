@@ -1,4 +1,5 @@
 var Q = require('q');
+var http = require('http');
 var https = require('https');
 var url = require('url');
 
@@ -17,13 +18,15 @@ HttpUtils.prototype.sendToServer = function(type, serverUrl, body, extraHeaders,
         method: type
     };
 
+    var httpModule = http;
     if (username) {
         // http library base64 encodes for us
         options.credentials = username + ":" + password;
+        httpModule = https;
     }
 
     console.log("Contacting server with options: " + JSON.stringify(options, null, 2));
-    var request = https.request(options, function (response) {
+    var request = httpModule.request(options, function (response) {
 
         response.setEncoding('utf8');
         var data = "";

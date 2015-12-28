@@ -15,10 +15,18 @@ RdfQuery.prototype.performQuery = function(resource, type) {
         .then(function (data) {
             console.log("dbpedia: " + JSON.stringify(data));
             if (data != '') {
-                jsonResponse = data.results.bindings[0].resource.value;
-                deferred.resolve(jsonResponse);
+                try {
+                    if (data.results && data.results.bindings && data.results.bindings.length > 0 && data.results.bindings[0].resource) {
+                        jsonResponse = data.results.bindings[0].resource.value;
+                        deferred.resolve(jsonResponse);
+                    }else{
+                        console.log("Failed to extract dbpedia value.");
+                        deferred.reject(err);
+                    }
+                }catch(err) {
+                    deferred.reject(err);
+                }
             }
-            deferred.reject(err);
         }, function (err) {
             deferred.reject(err);
         });
