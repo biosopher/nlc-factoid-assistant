@@ -1,5 +1,6 @@
 var Q = require('q');
-var RdfQuery = require('../pipelines/rdf_query');
+var DBpediaUtils = require('../pipelines/dbpedia_utils');
+var DateUtils = require('../pipelines/date_utils');
 
 // Constants
 var RDF_REPLACE_STR = "$xxx_123_yyy$";
@@ -12,52 +13,127 @@ function PersonPipeline() {
 PersonPipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
 
     var deferred = Q.defer();
-
-    var resourceType = null;
-    var functionName = null;
-    var replyText = null;
     switch (intent) {
-        case "person-spouse":
-            resourceType = "dbp%3Aspouse"; // dbp:spouse
-            replyText = RDF_REPLACE_STR + " is the spouse of " + ;
+        case "place-birthdate":
+            this.answerBirthday(deferred,dataLinks);
+        case "place-birthplace":
+            this.answerBirthPlace(deferred,dataLinks);
             break;
         case "person-children":
-            //functionName = this.getChildrenAnswer;
-            resourceType = "children";
+            this.answerChildren(deferred,dataLinks);
             break;
-        case "place-person-height":
-            resourceType = "height";
+        case "person-net_worth":
+            this.answerNetWorth(deferred,dataLinks);
+        case "person-schooling":
+            this.answerSchooling(deferred,dataLinks);
+        case "person-spouse":
+            this.answerSpouse(deferred,dataLinks);
             break;
         default:
+            deferred.resolve(null);
             break;
-    }
-
-    if (functionName) {
-        //answerText = functionName(intent,dataLinks);
-        var answerText = resourceType + " is Barack Obama's spouse.";
-        deferred.resolve(answerText);
-    } else if (resourceType){
-        new RdfQuery().performQuery(dataLinks[0].dbpediaLink,resourceType)
-        .then(function(response) {
-                if (response && response.indexOf("dbpedia.org")) {
-                    var index = response.lastIndexOf("/")+1;
-                    response = response.substr(index);
-                    response = response.replace("_"," ");
-                }
-                var answerText = replyText.replace(RDF_REPLACE_STR,response);
-                deferred.resolve(answerText);
-            }, function(err) {
-                deferred.reject(err);
-            });
-    }else{
-        deferred.resolve(null);
     }
     return deferred.promise;
 }
 
-PersonPipeline.prototype.getChildrenAnswer = function(dataLinks) {
-    //var dbpediaPageContent = loadDBpediaPage(dataLinks[0].dbpediaLink);
-    return dataLinks[0].text + " has # children: ";
+PersonPipeline.prototype.answerBirthday = function(deferred,dataLinks) {
+
+    //var dbpediaLink = DBpediaUtils.getDBpediaLinkWithType(dataLinks,["person"]);
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3AbirthDate")
+        .then(function(answers) {
+            var date = DateUtils.getDateAsString(answers[0]);
+            var yearsSinceNow = DateUtils.getYearsSinceNow(answers[0]);
+            deferred.resolve(entity + " is " + yearsSinceNow + " years old and was born on " + date);
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+
+PersonPipeline.prototype.answerBirthPlace = function(deferred,dataLinks) {
+
+    //var dbpediaLink = DBpediaUtils.getDBpediaLinkWithType(dataLinks,["person"]);
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3AbirthDate")
+        .then(function(answers) {
+            deferred.resolve(entity + "'s height is " + answers[0]);
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+
+PersonPipeline.prototype.answerChildren = function(deferred,dataLinks) {
+
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3Achildren")
+        .then(function(children) {
+
+            var childrenStr;
+            var resourceLink = "http://dbpedia.org/resource/" + entity.replace(" ", "_");
+            if (children.length == 1 && parseInt(children[0]) != NaN) {
+                answer = "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a> has " + parseInt(children[0]) + " children";
+            }else{
+                childrenStr = DBpediaUtils.convertArrayToString(children);
+                answer = "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a>'s children are " + childrenStr;
+            }
+            deferred.resolve(answer);
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+
+PersonPipeline.prototype.answerNetWorth = function(deferred,dataLinks) {
+
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3Anetworth")
+        .then(function(answers) {
+            var netWorth = Number(answers[0]).toFixed(0);
+            netWorth = parseInt(netWorth).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var resourceLink = "http://dbpedia.org/resource/" + entity.replace(" ", "_");
+            answer = "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a>'s net worth is $" + netWorth;
+            deferred.resolve(answer);
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+PersonPipeline.prototype.answerSchooling = function(deferred,dataLinks) {
+
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3AalmaMater")
+        .then(function(schools) {
+            var schools = DBpediaUtils.convertArrayToString(answers);
+            var resourceLink = "http://dbpedia.org/resource/" + entity.replace(" ", "_");
+            answer = "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a> attended " + schools;
+            deferred.resolve(answer);
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+PersonPipeline.prototype.answerSpouse = function(deferred,dataLinks) {
+
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3Aspouse")
+        .then(function(spouses) {
+
+            entity = entity.replace("_", " ")
+            var answer;
+            if (spouses && spouses.length > 0){
+                var spouse = spouses[spouses.length-1];
+                var resourceLink = "http://dbpedia.org/resource/" + spouse.replace(" ", "_");
+                answer = "<a href='" + resourceLink + "' target='_blank'>" + spouse + "</a> is the spouse of " + entity;
+            }else {
+                answer = entity + " is not married."
+            }
+            deferred.resolve(answer);
+        }, function(err) {
+            deferred.reject(err);
+        });
 }
 
 // Exported class

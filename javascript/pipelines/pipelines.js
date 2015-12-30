@@ -1,8 +1,11 @@
 var Q = require('q');
-var PlacePipeline = require('../pipelines/place_pipeline');
+var HealthPipeline = require('../pipelines/health_pipeline');
 var PersonPipeline = require('../pipelines/person_pipeline');
-var placePipeline = new PlacePipeline();
+var PlacePipeline = require('../pipelines/place_pipeline');
+
+var HealthPipeline = new HealthPipeline();
 var personPipeline = new PersonPipeline();
+var placePipeline = new PlacePipeline();
 
 //************ Constructor **************//
 function Pipelines() {
@@ -20,7 +23,16 @@ Pipelines.prototype.determineAnswerText = function(intent, dataLinks) {
             }else {
                 personPipeline.getAnswerForIntent(intent, dataLinks)
                     .then(function (answer) {
-                        deferred.resolve(answer);
+                        if (answer) {
+                            deferred.resolve(answer);
+                        }else {
+                            healthPipeline.getAnswerForIntent(intent, dataLinks)
+                                .then(function (answer) {
+                                    deferred.resolve(answer);
+                                }, function (err) {
+                                    deferred.reject(err);
+                                });
+                        }
                     }, function (err) {
                         deferred.reject(err);
                     });

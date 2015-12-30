@@ -39,12 +39,15 @@ function WatsonUtils(app) {
 
 WatsonUtils.prototype.answerFactoid = function(req,res) {
 
+    var startTimestamp = new Date().getTime();
     if (this.nlcUtils.isAvailableForUse()) {
         var userText = req.body.userText;
         var response = {};
 
         // Save conversation to a Mongo database for later analysis. Call asynchronously.
-        this.conversationStore.storeConversation(userText);
+        var conversation = {"startTimestamp":startTimestamp,
+                            "userText":userText};
+        this.conversationStore.storeConversation(conversation);
 
         var internalThis = this;
         this.nlcUtils.determineUserIntent(userText)
@@ -52,18 +55,26 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
 
                 internalThis.alchemyUtils.extractLinkedData(userText)
                     .then(function(dataLinks) {
-                        var response = [];
-                        if (dataLinks.length > 0) {
+                        if (dataLinks && dataLinks.pages.length > 0) {
+                            var response = {};
                             response.dataLinks = dataLinks;
                             internalThis.pipelines.determineAnswerText(nlcResponse.top_class, dataLinks)
                                 .then(function (answerText) {
                                     response.answerText = answerText;
-                                    res.status(200).json(JSON.stringify(response));
+                                    this.conversationStore.storeConversation(userText);
+                                    response = JSON.stringify(response);
+
+                                    // Save to database if enabled
+                                    conversation.response = response;
+                                    this.conversationStore.updateConversation(conversation);
+
+                                    // Lastly return response to the user
+                                    res.status(200).json(response);
                                 }, function (err) {
                                     internalThis.handleError(res,"Failed to determine answer text for '" + userText + ". " + JSON.stringify(err));
                                 });
                         }else{
-                            res.status(200).json(JSON.stringify(response));
+                            internalThis.handleError(res,"Unsupported factoid.  No entities found");
                         }
                     }, function(err) {
                         internalThis.handleError(res,"Failed to extract dbpedia pages for '" + req.body + ". " + JSON.stringify(err));

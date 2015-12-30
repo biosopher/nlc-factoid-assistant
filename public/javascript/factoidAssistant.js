@@ -54,41 +54,54 @@ FactoidAssistant.App = function() {
             },
             dataType: "json",
             url: '/answerFactoid',
-            success: function (r, msg) {
-                var json = JSON.parse(r);
-                if (json.entities_response == undefined && json.concepts_response == undefined) {
-                    alert("Error communicating with the server.  Invalid response received.");
-                } else {
-                    updateAnswerText(json);
-                }
-
-                // Enable search and stop the progress indicator
-                ladda.stop();
-                questionInput.removeAttr("disabled");
+            success: function (res, msg) {
+                updateAnswerText(res);
             },
-            error: function (r, msg, e) {
-                alert('Error:' + JSON.stringify(e) + '\nresponse: ' + JSON.stringify(r) + '\nMessage: ' + JSON.stringify(msg));
-
-                // Enable search and stop progress indicator
-                ladda.stop();
-                questionInput.removeAttr("disabled");
+            error: function (res, msg, err) {
+                showError(res,msg,err);
             }
         });
     };
 
-    function updateAnswerText(response) {
+    function showError(res,msg,err) {
+
+        var errorText = "Error communicating with the server.<br>"+'Error:' + JSON.stringify(err) + '<br>response: ' + JSON.stringify(res) + '<br>Message: ' + JSON.stringify(msg);
+        if (res.responseText) {
+            var responseText = JSON.parse(res.responseText);
+            if (responseText.message) {
+                errorText = responseText.message
+            }
+        }
+        console.log(errorText);
 
         $("#answerDetailsDiv").toggleClass("hidden",false);
-        $("#entityConceptsLeftDiv").html(response.dataLinks.summary);
-        $("#entityConceptsDBpediaDiv").html(response.dataLinks.dbpediaLinkSummary);
-        $("#entityConceptsFreebaseDiv").html(response.dataLinks.freebaseLinkSummary);
-        $("#entityConceptsYagoDiv").html(response.dataLinks.yagoLinkSummary);
-        $("#entityConceptsOpencycDiv").html(response.dataLinks.opencycLinkSummary);
+        $("#entityConceptsDiv").toggleClass("hidden",true);
+        $("#answerDiv").html(errorText);
 
-        if (!response.answerText || response.answerText.length == 0) {
-            response.answerText = "Sorry your factoid type is not yet unsupported.";
+        // Enable search and stop the progress indicator
+        ladda.stop();
+        $("#questionInput").removeAttr("disabled");
+    }
+
+    function updateAnswerText(response) {
+
+        var json = JSON.parse(response);
+        $("#answerDetailsDiv").toggleClass("hidden",false);
+        $("#entityConceptsDiv").toggleClass("hidden",false);
+        $("#entityConceptsLeftDiv").html(json.dataLinks.entitySummary);
+        $("#entityConceptsDBpediaDiv").html(json.dataLinks.dbpediaLinkSummary);
+        $("#entityConceptsFreebaseDiv").html(json.dataLinks.freebaseLinkSummary);
+        $("#entityConceptsYagoDiv").html(json.dataLinks.yagoLinkSummary);
+        $("#entityConceptsOpencycDiv").html(json.dataLinks.opencycLinkSummary);
+
+        if (!json.answerText || json.answerText.length == 0) {
+            json.answerText = "Sorry. Factoid type not yet unsupported, data not contained in Wikipedia, or more details needed in question.";
         }
-        $("#answerDiv").text(response.answerText);
+        $("#answerDiv").html(json.answerText);
+
+        // Enable search and stop the progress indicator
+        ladda.stop();
+        $("#questionInput").removeAttr("disabled");
     }
 
     // Initialize the application

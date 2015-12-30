@@ -8,7 +8,7 @@ html
         link(href="stylesheets/nlc_factoid.css" type="text/css" rel="stylesheet")
         link(href="stylesheets/ladda/ladda-themeless.min.css" type="text/css" rel="stylesheet")
 
-        title NLC Factoid Assistant
+        title NLC Factoid
 
     body.bodyBackground
         div#exampleQuestionsDiv
@@ -23,9 +23,9 @@ html
                 div#appHeadingWrapper
                         img#watsonImg.watsonImg(src="stylesheets/images/watson_logo.png")
                         span#watsonHeading NLC
-                        span#demoName &nbsp;Factoid Assistant
+                        span#demoName &nbsp;Factoid (Basic Edition)
                         div#spacingHack
-                div#infoBubble I can answer Wikipedia factoids
+                div#infoBubble I can find you a few facts from Wikipedia
 
                 div#searchDiv.searchDiv
                     form#questionForm(role="form" target="form-iframe")
@@ -39,6 +39,7 @@ html
                 div#answerDiv
                     Michelle Obama is Barack Obama's spouse
                 div#entityConceptsDiv
+                    div#entityConceptsDivLabel Entities and concepts detected:
                     div#entityConceptsLeftDiv
                         Barack Obama (e)
                     div#entityConceptsDBpediaDiv

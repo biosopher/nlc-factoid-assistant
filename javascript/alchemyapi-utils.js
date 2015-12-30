@@ -76,37 +76,40 @@ AlchemyApiUtils.prototype.extractConcepts = function(userText) {
 
 AlchemyApiUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse) {
 
-    var dataLinks = [];
     var foundDataMap = {}; // Avoid returning duplicate data types
-    var summary = "";
+    var entitySummary = "";
     var dbpediaLinkSummary = "";
     var freebaseLinkSummary = "";
     var yagoLinkSummary = "";
     var opencycLinkSummary = "";
+    var dataLinks = {};
+    dataLinks.pages = [];
     if (entitiesResponse && entitiesResponse.entities) {
         for (var i = 0; i < entitiesResponse.entities.length; i++) {
             var entity = entitiesResponse.entities[i];
             if (entity.disambiguated && entity.disambiguated.dbpedia) {
                 var page = {};
+                dataLinks.pages[dataLinks.pages.length] = page;
                 foundDataMap[entity.text] = page;
+
                 page.text = entity.text;
                 page.type = entity.type;
+                page.relevance = entity.relevance;
                 page.dbpediaLink = entity.disambiguated.dbpedia;
                 page.freebaseLink = entity.disambiguated.freebase;
                 page.yagoLink = entity.disambiguated.yago;
                 page.opencycLink = entity.disambiguated.opencyc;
 
-                dataLinks[dataLinks.length] = page;
-                summary += page.text+" (e):<br>";
-                dbpediaLinkSummary += "<a href='"+page.dbpediaLink+"'>DBpedia</a><br>";
+                entitySummary += page.text+" (e):<br>";
+                dbpediaLinkSummary += "<a href='"+page.dbpediaLink+"' target='_blank'>DBpedia</a><br>";
                 if (page.freebaseLink) {
-                    freebaseLinkSummary += "<a href='"+page.freebaseLink+"'>Freebase</a><br>";
+                    freebaseLinkSummary += "<a href='"+page.freebaseLink+"' target='_blank'>Freebase</a><br>";
                 }
                 if (page.yagoLink) {
-                    yagoLinkSummary += "<a href='"+page.yagoLink+"'>Yago</a><br>";
+                    yagoLinkSummary += "<a href='"+page.yagoLink+"' target='_blank'>Yago</a><br>";
                 }
                 if (page.opencycLink) {
-                    opencycLinkSummary += "<a href='"+page.opencycLink+"'>OpenCyc</a><br>";
+                    opencycLinkSummary += "<a href='"+page.opencycLink+"' target='_blank'>OpenCyc</a><br>";
                 }
             }
         }
@@ -117,33 +120,34 @@ AlchemyApiUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsR
             if (concept.dbpedia && !foundDataMap[concept.text]) {
                 var page = {};
                 foundDataMap[concept.text] = page;
+                dataLinks.pages[dataLinks.pages.length] = page;
                 page.text = concept.text;
                 page.type = concept.type;
+                page.relevance = entity.relevance;
                 page.dbpediaLink = concept.dbpedia;
                 page.freebaseLink = concept.freebase;
                 page.yagoLink = concept.yago;
                 page.opencycLink = concept.opencyc;
 
-                dataLinks[dataLinks.length] = page;
-                summary += page.text + " (c):<br>";
-                dbpediaLinkSummary += "<a href='" + page.dbpediaLink + "'>DBpedia</a><br>";
+                entitySummary += page.text + " (c):<br>";
+                dbpediaLinkSummary += "<a href='" + page.dbpediaLink + "' target='_blank'>DBpedia</a><br>";
                 if (page.freebaseLink) {
-                    freebaseLinkSummary += "<a href='" + page.freebaseLink + "'>Freebase</a><br>";
+                    freebaseLinkSummary += "<a href='" + page.freebaseLink + "' target='_blank'>Freebase</a><br>";
                 }
                 if (page.yagoLink) {
-                    yagoLinkSummary += "<a href='" + page.yagoLink + "'>Yago</a><br>";
+                    yagoLinkSummary += "<a href='" + page.yagoLink + " target='_blank''>Yago</a><br>";
                 }
                 if (page.opencycLink) {
-                    opencycLinkSummary += "<a href='" + page.opencycLink + "'>OpenCyc</a><br>";
+                    opencycLinkSummary += "<a href='" + page.opencycLink + "' target='_blank'>OpenCyc</a><br>";
                 }
             }
         }
     }
 
-    if (summary.length == 0) {
-        summary = "No entities found";
+    if (entitySummary.length == 0) {
+        entitySummary = "No entities found";
     }
-    dataLinks.summary = summary;
+    dataLinks.entitySummary = entitySummary;
     dataLinks.dbpediaLinkSummary = dbpediaLinkSummary;
     dataLinks.freebaseLinkSummary = freebaseLinkSummary;
     dataLinks.yagoLinkSummary = yagoLinkSummary;

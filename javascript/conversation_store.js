@@ -2,10 +2,9 @@ var cloudant = require('cloudant');
 var bluemix  = require('../config/bluemix');
 var extend   = require('util')._extend;
 
-var CONVERSATIONS_DATABASE = 'ipa_conversations';
-
 function ConversationStore(watson) {
 
+    this.watson = watson;
     // If bluemix credentials (VCAP_SERVICES) are present then override the local credentials
     watson.config.cloudant =  extend(watson.config.cloudant, bluemix.getServiceCreds('cloudantNoSQLDB')); // VCAP_SERVICES
 
@@ -13,57 +12,60 @@ function ConversationStore(watson) {
 
         // Otherwise the use hasn't configured the app to track user text submissions.
 
-        this.conversationsDB = null;
-        var cloudantService = cloudant({account:watson.config.cloudant.username, password:watson.config.cloudant.password});
-        cloudantService.db.list(function(err, allDbs) {
+        this.cloudantDB = null;
+        var internalThis = this;
+        this.cloudantService = cloudant({account:watson.config.cloudant.username, password:watson.config.cloudant.password});
+        this.cloudantService.db.list(function(err, allDbs) {
 
             //destroyDatabase();
             if(typeof allDbs != 'undefined'){
                 for (var i = 0; i < allDbs.length; i++) {
-                    if (allDbs[0] == CONVERSATIONS_DATABASE) {
-                        this.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
+                    if (allDbs[i] == internalThis.watson.config.cloudant.db_name) {
+                        internalThis.cloudantDB = internalThis.cloudantService.db.use(internalThis.watson.config.cloudant.db_name)
                         console.log('Cloudant database ready');
                         return;
                     }
                 }
             }
-            createDatabase();
+            internalThis.createDatabase();
         });
     }
 }
 
-ConversationStore.prototype.storeConversation = function(conversationObj) {
+ConversationStore.prototype.storeConversation = function(factoidObj) {
 
     // if{} here has two effects:
     // 1. Avoid errors if cloudant service not enabled
     // 2. database creation can take awhile first time app launches so prevent errors
-    if (this.conversationsDB) {
-        conversationObj._id = conversationObj.dialog_id + "_" + conversationObj.conversation_id;
-        this.conversationsDB.insert(conversationObj,function(err, body, header) {
+    if (this.cloudantDB) {
+        factoidObj._id = factoidObj.startTimestamp;
+        var internalThis = this;
+        this.cloudantDB.insert(factoidObj,function(err, body, header) {
             if (err) {
-                updateConversation(conversationObj);
+                internalThis.updateConversation(factoidObj);
             }else{
-                var conversationJson = JSON.stringify(conversationObj, null, 2);
-                console.log('Inserted conversation: ' + conversationJson);
+                var factoidJson = JSON.stringify(factoidObj, null, 2);
+                console.log('Inserted conversation: ' + factoidJson);
             }
         });
     }
 }
 
-ConversationStore.prototype.updateConversation = function(conversationObj) {
+ConversationStore.prototype.updateConversation = function(factoidObj) {
 
-    this.conversationsDB.get(conversationObj._id,{ revs_info: true },function(err, body, header) {
+    var internalThis = this;
+    this.cloudantDB.get(factoidObj._id,{ revs_info: true },function(err, body, header) {
         if (err) {
-            console.log('conversationsDB.get failed', JSON.stringify(err));
-            module.exports.storeConversation(conversationObj);
+            console.log('cloudant.get failed', JSON.stringify(err));
+            internalThis.storeConversation(factoidObj);
         }else{
-            conversationObj._rev = body._rev;
-            module.exports.storeConversation(conversationObj);
+            factoidObj._rev = body._rev;
+            internalThis.storeConversation(factoidObj);
         }
     });
 }
 
-ConversationStore.prototype.printConversations = function(conversationObj) {
+ConversationStore.prototype.printConversations = function(factoidObj) {
 
     var conversations = initDatabase();
 
@@ -80,20 +82,22 @@ ConversationStore.prototype.printConversations = function(conversationObj) {
 }
 
 ConversationStore.prototype.createDatabase = function() {
-    cloudantService.db.create(CONVERSATIONS_DATABASE, function(err) {
+    var internalThis = this;
+    this.cloudantService.db.create(this.watson.config.cloudant.db_name, function(err) {
         if (err) {
             console.log('Failure to create the cloudant database', JSON.stringify(err));
         } else {
-            this.conversationsDB = cloudantService.db.use(CONVERSATIONS_DATABASE)
+            internalThis.cloudantDB = internalThis.cloudantService.db.use(internalThis.watson.config.cloudant.db_name)
             console.log('Created Cloudant database');
         }
     });
 }
 
 ConversationStore.prototype.destroyDatabase = function() {
-    cloudantService.db.destroy(CONVERSATIONS_DATABASE, function(err) {
+    var internalThis = this;
+    this.cloudantService.db.destroy(CONVERSATIONS_DATABASE, function(err) {
         console.log('Destroyed Cloudant database');
-        createDatabase();
+        internalThis.createDatabase();
     });
 }
 
