@@ -17,11 +17,14 @@ PlacePipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
         case "place-capital":
             this.answerCapital(deferred,dataLinks);
             break;
+        case "place-completion_date":
+            this.answerCompletionDate(deferred,dataLinks);
+            break;
         case "place-governor_mayor":
             this.answerGovernorMayor(deferred,dataLinks);
             break;
-        case "place-completionDate":
-            this.answerCompletionDate(deferred,dataLinks);
+        case "place-height":
+            this.answerHeight(deferred,dataLinks);
             break;
         case "place-population":
             this.answerPopulation(deferred,dataLinks);
@@ -35,25 +38,25 @@ PlacePipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
 
 PlacePipeline.prototype.answerAreaCode = function(deferred,dataLinks) {
 
-    DBpediaUtils.performQueryAndResolve(dataLinks,"dbp%3AareaCode", false, deferred, function(entity,answers) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbp%3AareaCode"],false,false,deferred,function(entity,answers,typeIndex) {
         return "The area code for " + DBpediaUtils.linkForEntity(entity) + " is " + answers[0];
     });
 }
 
 PlacePipeline.prototype.answerCapital = function(deferred,dataLinks) {
 
-    DBpediaUtils.performQueryAndResolve(dataLinks,"dbp%3Acapital", false, deferred, function(entity,answers) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbp%3Acapital"],false,false,deferred,function(entity,answers,typeIndex) {
         return DBpediaUtils.linkForEntity(answers[0]) + " is the capital of "+ DBpediaUtils.linkForEntity(entity);
     });
 }
 
 PlacePipeline.prototype.answerCompletionDate = function(deferred,dataLinks) {
 
-    DBpediaUtils.performQueryAndResolve(dataLinks,"dbp%3AcompletionDate", false, deferred, function(entity,answers) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbp%3AcompletionDate"],false,false,deferred,function(entity,answers,typeIndex) {
         var date = answers[0];
         if (date.indexOf("-")>0) {
             // parse date string else assume this is just a year value
-            date = DateUtils.getDateAsString();
+            date = DateUtils.getDateAsString(date);
         }
         return DBpediaUtils.linkForEntity(entity) + " was completed on " + date;
     });
@@ -62,7 +65,7 @@ PlacePipeline.prototype.answerCompletionDate = function(deferred,dataLinks) {
 PlacePipeline.prototype.answerGovernorMayor = function(deferred,dataLinks) {
 
     // First test for governor
-    DBpediaUtils.performQueryForTypeArrayAndResolve(dataLinks,["dbp%3Agovernor","dbp%3AleaderName"], false, deferred, function(entity,answers,typeIndex) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbp%3Agovernor","dbp%3AleaderName"],false,false,deferred,function(entity,answers,typeIndex) {
         if (typeIndex == 0) {
             return DBpediaUtils.linkForEntity(answers[0]) + " is the governor of "+ DBpediaUtils.linkForEntity(entity);
         }else{
@@ -72,10 +75,16 @@ PlacePipeline.prototype.answerGovernorMayor = function(deferred,dataLinks) {
     });
 }
 
+PlacePipeline.prototype.answerHeight = function(deferred,dataLinks) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbo%3Aelevation","dbp%3Aheight"],false,false,deferred,function(entity,answers,typeIndex) {
+        return DBpediaUtils.linkForEntity(entity) + "'s height is " + answers[0]+ " meters";
+    });
+}
+
 PlacePipeline.prototype.answerPopulation = function(deferred,dataLinks) {
 
     // First use the format most popular with cities and countries
-    DBpediaUtils.performQueryForTypeArrayAndResolve(dataLinks,["dbo%3ApopulationTotal","dbp%3A2010pop"], false, deferred, function(entity,answers,typeIndex) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbo%3ApopulationTotal","dbp%3A2010pop"],false,false,deferred,function(entity,answers,typeIndex) {
         if (typeIndex == 0) {
             // regex at end is used to add commas to large numbers
             return DBpediaUtils.linkForEntity(entity) + "'s population is " + answers[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");

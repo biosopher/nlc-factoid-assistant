@@ -1,0 +1,24 @@
+doctype html
+html
+    head
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')
+        meta(charset="utf-8")
+
+        link(href="stylesheets/conversations.css" type="text/css" rel="stylesheet")
+        link(href="images/favicon.png" type="image/png" rel="icon")
+        link(href="stylesheets/ladda/ladda-themeless.min.css" type="text/css" rel="stylesheet")
+
+        title Conversations
+
+    body.bodyBackground
+
+        div#mainWrapper
+            span#heading NLC
+            span#subheading &nbsp;Factoid Conversations
+
+            div#conversationsDiv
+
+            div#conversationsHiddenDiv #{conversations}
+
+    script(src="javascript/jquery/jquery-2.1.0.min.js" type="text/javascript")<!-- jQuery-- >
+    script(src="javascript/conversation_utils.js" type="text/javascript")<!-- Watson Team JS-- >

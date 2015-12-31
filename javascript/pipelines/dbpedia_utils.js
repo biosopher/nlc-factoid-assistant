@@ -1,28 +1,26 @@
 var Q = require('q');
 var HttpUtils = require('../pipelines/http_utils');
 
-function performQueryAndResolve(dataLinks, type,isFilterEnglishOnly, deferred, getAnswerText) {
+// isFilterEnglishOnly = true if a text answer is typically provided in multiple language and only english is wanted.
+// isAnswerMissingData = true if answer should be obtained when no data found.
+function performQueryAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMissingData,deferred,getAnswerText) {
     // Create type array and pass to next method
-    performQueryForArrayIndexAndResolve(dataLinks, [type],isFilterEnglishOnly, deferred, getAnswerText,0);
+    performQueryForArrayIndexAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMissingData,deferred,0,getAnswerText);
 }
-function performQueryForTypeArrayAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText) {
-    // Start with index=0 for type array
-    performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText,0);
-}
-function performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText, typeIndex) {
+function performQueryForArrayIndexAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMissingData,deferred,typeIndex,getAnswerText) {
 
     var dbpediaLink = dataLinks.pages[0].dbpediaLink;
     var entity = extractDBpediaEntity(dbpediaLink);
-    performQuery(entity,typeArr[typeIndex])
+    performQuery(entity,typeArr[typeIndex],isFilterEnglishOnly)
         .then(function(answers) {
-            if (answers && answers.length > 0) {
+            if ((answers && answers.length > 0) || isAnswerMissingData) {
                 var answer = getAnswerText(entity,answers,typeIndex);
                 deferred.resolve(answer);
             }else if (typeIndex == typeArr.length - 1){
                 deferred.resolve(null);
             }else{
                 typeIndex++
-                performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText,typeIndex);
+                performQueryForArrayIndexAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMissingData,deferred,typeIndex,getAnswerText);
             }
         }, function(err) {
             deferred.reject(err);
@@ -126,4 +124,3 @@ module.exports.extractDBpediaEntity = extractDBpediaEntity;
 module.exports.linkForEntity = linkForEntity;
 module.exports.performQuery = performQuery;
 module.exports.performQueryAndResolve = performQueryAndResolve;
-module.exports.performQueryForTypeArrayAndResolve = performQueryForTypeArrayAndResolve;

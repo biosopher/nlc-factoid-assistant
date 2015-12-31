@@ -1,15 +1,14 @@
-var Q = require('q');
 var fs = require('fs');
 var strip_json_comments = require('strip-json-comments');
 
 // Service utils classes
 var ConversationStore = require('../javascript/conversation_store');
-var NlcUtils = require('../javascript/nlc-utils');
-var AlchemyApiUtils = require('../javascript/alchemyapi-utils');
+var NlcUtils = require('../javascript/nlc_utils');
+var AlchemyApiUtils = require('../javascript/alchemyapi_utils');
 var Pipelines = require('../javascript/pipelines/pipelines');
 
 //************ Constructor **************//
-function WatsonUtils(app) {
+function WatsonUtils(app,config) {
 
     // Load local config including credentials for running app locally (but services remotely)
     var configFPath = "./config/watson_config.json";
@@ -25,10 +24,10 @@ function WatsonUtils(app) {
     }
 
     // Create Service utils classes
-    this.conversationStore = new ConversationStore(this);
-    this.nlcUtils = new NlcUtils(this);
-    this.alchemyUtils = new AlchemyApiUtils(this);
-    this.pipelines = new Pipelines();
+    this.conversationStore = new ConversationStore(this,config)
+    this.nlcUtils = new NlcUtils(this)
+    this.alchemyUtils = new AlchemyApiUtils(this)
+    this.pipelines = new Pipelines()
 
     //************ Supported URL paths **************//
     var internalThis = this;
@@ -59,6 +58,8 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
                             var response = {};
                             response.data_links = dataLinks;
                             response.top_class = nlcResponse.top_class;
+                            internalThis.conversationStore.updateConversation(conversation);
+
                             internalThis.pipelines.determineAnswerText(nlcResponse.top_class, dataLinks)
                                 .then(function (answerText) {
 
@@ -74,7 +75,7 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
                                     internalThis.handleError(res,"Failed to determine answer text for '" + userText + ". " + JSON.stringify(err));
                                 });
                         }else{
-                            internalThis.handleError(res,"No entities found for factoid: "+nlcResponse.top_class+".  No entities found");
+                            internalThis.handleError(res,"No entities found for factoid: "+nlcResponse.top_class+".");
                         }
                     }, function(err) {
                         internalThis.handleError(res,"Failed to extract dbpedia pages for '" + req.body + ". " + JSON.stringify(err));

@@ -20,44 +20,31 @@ HealthPipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
     return deferred.promise;
 }
 
-HealthPipeline.prototype.isDiseaseType = function(entity) {
+HealthPipeline.prototype.isDiseaseType = function(dataLinks) {
 
     var deferred = Q.defer();
-    new DBpediaUtils.DBpediaQuery().performQuery(entity,"rdf%3Atype")
-        .then(function(types) {
-            var isDiseaseType = false;
-            for (var i = 0; i < types.length; i++) {
-                if (types[i].indexOf("Disease") >=0) {
-                    isDiseaseType = true;
-                    break;
-                }
+    DBpediaUtils.performQueryAndResolve(dataLinks, ["rdf%3Atype"],false,false,deferred,function (entity, answers, index) {
+        var isDiseaseType = false;
+        for (var i = 0; i < answers.length; i++) {
+            if (answers[i].indexOf("Disease") >=0) {
+                isDiseaseType = true;
+                break;
             }
-            deferred.resolve(isDiseaseType);
-        }, function(err) {
-            deferred.reject(err);
-        });
+        }
+        return isDiseaseType;
+    });
     return deferred.promise;
 }
 
 HealthPipeline.prototype.answerConditionCause = function(deferred,dataLinks) {
 
     // First determine if entity is of type=disease
-    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
-    var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
-    this.isDiseaseType(entity)
+    this.isDiseaseType(dataLinks)
         .then(function(isDiseaseType) {
-
             if (isDiseaseType) {
-                new DBpediaUtils.DBpediaQuery().performQuery(entity,"rdfs%3Acomment",true)
-                    .then(function(comments) {
-                        if (comments && comments.length) {
-                            deferred.resolve(comments[0]);
-                        }else{
-                            deferred.resolve(null);
-                        }
-                    }, function(err) {
-                        deferred.reject(err);
-                    });
+                DBpediaUtils.performQueryAndResolve(dataLinks, ["rdfs%3Acomment"],true,false,deferred,function (entity, answers, index) {
+                    return answers[0];
+                });
             }else{
                 deferred.resolve(null);
             }

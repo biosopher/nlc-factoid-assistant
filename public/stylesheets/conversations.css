@@ -1,0 +1,80 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: HelveticaNeue, Helvetica, Arial, sans-serif;
+}
+
+body a {
+    text-decoration: none;
+}
+body div {
+    box-sizing: border-box;
+}
+.bodyBackground{
+    background-color: #008abf;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+#mainWrapper {
+    width: 1000px;
+    margin-top:25px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #fff;
+}
+#heading {
+    margin-top:25px;
+    font-size:30px;
+    font-weight: bold;
+}
+#subheading {
+    font-size:30px;
+    font-weight: normal;
+    margin-bottom:25px;
+}
+#conversationsDiv {
+    margin-top:25px;
+    margin-left: 0px;
+}
+.topClass {
+    color: #fec217;
+    padding-right:10px;
+}
+.userText {
+    padding-right:10px;
+}
+/***  Common CSS ***/
+a:link, a:visited {
+    color: #d1eb98;
+    text-decoration: underline;
+}
+.boldTitle {
+    color: #000;
+    font-weight: bold;
+}
+.hidden {
+    display: none;
+}
+.visible {
+    display: block;
+}
+.inline {
+    display: inline;
+}
+pre {
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+.clearBoth {
+    clear:both;
+}
+

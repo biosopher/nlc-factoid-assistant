@@ -26,19 +26,13 @@ app.all('*', function(req,res,next) {
 
 // Initialize Watson
 var WatsonUtils = require('./javascript/watson');
-config.watson = new WatsonUtils(app);
+config.watson = new WatsonUtils(app,config);
 
 // Setup routes
 var indexJS = require('./routes/index'); //Routes for AJAX callbacks
 app.use('/',indexJS);
-
-
-if (app.get('env') === 'development' || app.get('env') === 'dev') {
-    app.use(function(err, req, res, next) {
-	console.error("error encountered",err.message);
-        res.status(500);
-    });
-}
+var conversationsJS = require('./routes/conversations'); //Routes for AJAX callbacks
+app.use('/conversations',conversationsJS);
 
 // The IP and port of the Cloud Foundry DEA (Droplet Execution Agent) that hosts this application:
 var host = (process.env.VCAP_APP_HOST || 'localhost');
