@@ -123,7 +123,7 @@ AlchemyApiUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsR
                 dataLinks.pages[dataLinks.pages.length] = page;
                 page.text = concept.text;
                 page.type = concept.type;
-                page.relevance = entity.relevance;
+                page.relevance = concept.relevance;
                 page.dbpediaLink = concept.dbpedia;
                 page.freebaseLink = concept.freebase;
                 page.yagoLink = concept.yago;
@@ -147,11 +147,11 @@ AlchemyApiUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsR
     if (entitySummary.length == 0) {
         entitySummary = "No entities found";
     }
-    dataLinks.entitySummary = entitySummary;
-    dataLinks.dbpediaLinkSummary = dbpediaLinkSummary;
-    dataLinks.freebaseLinkSummary = freebaseLinkSummary;
-    dataLinks.yagoLinkSummary = yagoLinkSummary;
-    dataLinks.opencycLinkSummary = opencycLinkSummary;
+    dataLinks.entity_summary = entitySummary;
+    dataLinks.dbpedia_link_summary = dbpediaLinkSummary;
+    dataLinks.freebase_link_summary = freebaseLinkSummary;
+    dataLinks.yago_link_summary = yagoLinkSummary;
+    dataLinks.opencyc_link_summary = opencycLinkSummary;
     return dataLinks;
 }
 

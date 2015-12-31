@@ -45,8 +45,8 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
         var response = {};
 
         // Save conversation to a Mongo database for later analysis. Call asynchronously.
-        var conversation = {"startTimestamp":startTimestamp,
-                            "userText":userText};
+        var conversation = {"start_timestamp":startTimestamp,
+                            "user_text":userText};
         this.conversationStore.storeConversation(conversation);
 
         var internalThis = this;
@@ -57,18 +57,18 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
                     .then(function(dataLinks) {
                         if (dataLinks && dataLinks.pages.length > 0) {
                             var response = {};
-                            response.dataLinks = dataLinks;
+                            response.data_links = dataLinks;
+                            response.top_class = nlcResponse.top_class;
                             internalThis.pipelines.determineAnswerText(nlcResponse.top_class, dataLinks)
                                 .then(function (answerText) {
-                                    response.answerText = answerText;
-                                    this.conversationStore.storeConversation(userText);
-                                    response = JSON.stringify(response);
 
                                     // Save to database if enabled
+                                    response.answer_text = answerText;
                                     conversation.response = response;
-                                    this.conversationStore.updateConversation(conversation);
+                                    internalThis.conversationStore.updateConversation(conversation);
 
                                     // Lastly return response to the user
+                                    response = JSON.stringify(response);
                                     res.status(200).json(response);
                                 }, function (err) {
                                     internalThis.handleError(res,"Failed to determine answer text for '" + userText + ". " + JSON.stringify(err));

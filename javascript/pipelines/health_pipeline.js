@@ -20,10 +20,10 @@ HealthPipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
     return deferred.promise;
 }
 
-HealthPipeline.prototype.isDiseaseType = function(dbpediaLink) {
+HealthPipeline.prototype.isDiseaseType = function(entity) {
 
     var deferred = Q.defer();
-    new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3Atype")
+    new DBpediaUtils.DBpediaQuery().performQuery(entity,"rdf%3Atype")
         .then(function(types) {
             var isDiseaseType = false;
             for (var i = 0; i < types.length; i++) {
@@ -44,11 +44,11 @@ HealthPipeline.prototype.answerConditionCause = function(deferred,dataLinks) {
     // First determine if entity is of type=disease
     var dbpediaLink = dataLinks.pages[0].dbpediaLink;
     var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
-    this.isDiseaseType(dbpediaLink)
+    this.isDiseaseType(entity)
         .then(function(isDiseaseType) {
 
             if (isDiseaseType) {
-                new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3Acomment")
+                new DBpediaUtils.DBpediaQuery().performQuery(entity,"rdfs%3Acomment",true)
                     .then(function(comments) {
                         if (comments && comments.length) {
                             deferred.resolve(comments[0]);

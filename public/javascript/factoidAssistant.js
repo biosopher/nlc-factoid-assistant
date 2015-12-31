@@ -76,6 +76,7 @@ FactoidAssistant.App = function() {
 
         $("#answerDetailsDiv").toggleClass("hidden",false);
         $("#entityConceptsDiv").toggleClass("hidden",true);
+        $("#FactoidDivFactoid").toggleClass("hidden",true);
         $("#answerDiv").html(errorText);
 
         // Enable search and stop the progress indicator
@@ -88,16 +89,18 @@ FactoidAssistant.App = function() {
         var json = JSON.parse(response);
         $("#answerDetailsDiv").toggleClass("hidden",false);
         $("#entityConceptsDiv").toggleClass("hidden",false);
-        $("#entityConceptsLeftDiv").html(json.dataLinks.entitySummary);
-        $("#entityConceptsDBpediaDiv").html(json.dataLinks.dbpediaLinkSummary);
-        $("#entityConceptsFreebaseDiv").html(json.dataLinks.freebaseLinkSummary);
-        $("#entityConceptsYagoDiv").html(json.dataLinks.yagoLinkSummary);
-        $("#entityConceptsOpencycDiv").html(json.dataLinks.opencycLinkSummary);
+        $("#FactoidDivFactoid").toggleClass("hidden",false);
+        $("#entityConceptsLeftDiv").html(json.data_links.entity_summary);
+        $("#entityConceptsDBpediaDiv").html(json.data_links.dbpedia_link_summary);
+        $("#entityConceptsFreebaseDiv").html(json.data_links.freebaseLink_summary);
+        $("#entityConceptsYagoDiv").html(json.data_links.yago_link_summary);
+        $("#entityConceptsOpencycDiv").html(json.data_links.opencyc_link_summary);
+        $("#factoidTypeDiv").html(json.top_class);
 
-        if (!json.answerText || json.answerText.length == 0) {
-            json.answerText = "Sorry. Factoid type not yet unsupported, data not contained in Wikipedia, or more details needed in question.";
+        if (!json.answer_text || json.answer_text.length == 0) {
+            json.answer_text = "Sorry. Factoid not yet unsupported, data not in Wikipedia, or more details needed in question.";
         }
-        $("#answerDiv").html(json.answerText);
+        $("#answerDiv").html(json.answer_text);
 
         // Enable search and stop the progress indicator
         ladda.stop();

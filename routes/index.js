@@ -23,11 +23,9 @@ router.get('/', function(req, res) {
     exampleQuestions.questions[15] = { text:"What is the population of the New York City?"};
     exampleQuestions.questions[16] = { text:"What is the area code for Park City, Utah?"};
     exampleQuestions.questions[17] = { text:"Who is the governor of California?"};
-    exampleQuestions.questions[18] = { text:"Who is the mayor of San Francisco?"};
+    exampleQuestions.questions[18] = { text:"Who is the mayor of San Francisco, California?"};
     exampleQuestions.questions[19] = { text:"What are the symptoms of the common cold"};
-    exampleQuestions.questions[20] = { text:"Why do people get the flu?"};
-    exampleQuestions.questions[21] = { text:"How many people live in France?"};
-    exampleQuestions.questions[22] = { text:"Who is the mayor of New York City?"};
+    exampleQuestions.questions[20] = { text:"How many people live in Tokyo, Japan?"};
 
     res.render('index', {exampleQuestions:JSON.stringify(exampleQuestions) });
 });

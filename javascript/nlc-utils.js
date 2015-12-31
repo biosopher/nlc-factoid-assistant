@@ -32,7 +32,7 @@ NlcUtils.prototype.classifierInitCompleted = function(errMessage) {
 
     this.isClassifierAvailable = (errMessage == undefined || errMessage == null);
     if (errMessage) {
-        this.watson.handleError({errMessage : errMessage});
+        console.log({errMessage : errMessage});
     }else{
         console.log("Classifier is available!");
     }

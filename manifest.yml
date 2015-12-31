@@ -1,19 +1,15 @@
 declared-services:
-  factoid-dialog_service:
-    label: dialog
-    plan: standard
-  factoid-nlc_service:
+  ipa-nlc_service:
     label: natural_language_classifier
     plan: standard
-  factoid-cloudant_service:
+  ipa-cloudant_service:
     label: cloudantNoSQLDB
     plan: Shared
 
 applications:
 - services:
-  - factoid-nlc_service
-  - factoid-dialog_service
-  - factoid-cloudant_service
+  - ipa-nlc_service
+  - ipa-cloudant_service
   name: nlc-factoid-assistant
   host: nlc-factoid-assistant
   command: node app.js

@@ -36,11 +36,11 @@ ConversationStore.prototype.storeConversation = function(factoidObj) {
 
     // if{} here has two effects:
     // 1. Avoid errors if cloudant service not enabled
-    // 2. database creation can take awhile first time app launches so prevent errors
+    // 2. database creation can take awhile first time app launches so prevent errors if it isn't ready for 1st transactions
     if (this.cloudantDB) {
-        factoidObj._id = factoidObj.startTimestamp;
+        factoidObj._id = factoidObj.start_timestamp+"";;
         var internalThis = this;
-        this.cloudantDB.insert(factoidObj,function(err, body, header) {
+        this.cloudantDB.insert(factoidObj,function(err, body) {
             if (err) {
                 internalThis.updateConversation(factoidObj);
             }else{

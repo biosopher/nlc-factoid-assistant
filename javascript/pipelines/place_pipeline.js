@@ -90,14 +90,16 @@ PlacePipeline.prototype.answerGovernorMayor = function(deferred,dataLinks) {
             }else{
 
                 // Else try mayor
-                new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3A2010pop")
+                new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3AleaderName")
                     .then(function(answers) {
                         if (answers && answers.length > 0) {
-                            var mayor = answers[0];
+                            var mayor = DBpediaUtils.extractDBpediaEntity(answers[0]);
                             var mayorLink = "http://dbpedia.org/resource/" + mayor.replace(" ","_");
                             var entityLink = "http://dbpedia.org/resource/" + entity.replace(" ","_");
                             var answer = "<a href='"+mayorLink+"' target='_blank'>"+ mayor.replace("_"," ") + "</a> is the mayor of <a href='"+entityLink+"' target='_blank'>"+ entity.replace("_"," ") + "</a>";
                             deferred.resolve(answer);
+                        }else{
+                            deferred.resolve(null);
                         }
                     }, function(err) {
                         deferred.reject(err);
@@ -114,13 +116,18 @@ PlacePipeline.prototype.answerCompletionDate = function(deferred,dataLinks) {
     var entity = DBpediaUtils.extractDBpediaEntity(dbpediaLink);
     new DBpediaUtils.DBpediaQuery().performQuery(entity,"dbp%3AcompletionDate")
         .then(function(answers) {
-            var date = answers[0];
-            if (date.indexOf("-")>0) {
-                // parse date string else assume this is just a year value
-                date = DateUtils.getDateAsString();
+            if (answers && answers.length > 0) {
+                var date = answers[0];
+                if (date.indexOf("-")>0) {
+                    // parse date string else assume this is just a year value
+                    date = DateUtils.getDateAsString();
+                }
+                var entityLink = "http://dbpedia.org/resource/" + entity.replace(" ","_");
+                var answer = "<a href='"+entityLink+"' target='_blank'>"+ entity.replace("_"," ") + "</a> was completed on " + date;
+                deferred.resolve(answer);
+            }else{
+                deferred.resolve(null);
             }
-            var entityLink = "http://dbpedia.org/resource/" + entity.replace(" ","_");
-            var answer = "<a href='"+entityLink+"' target='_blank'>"+ entity.replace("_"," ") + "</a> was completed on " + date;
         }, function(err) {
             deferred.reject(err);
         });
@@ -148,9 +155,11 @@ PlacePipeline.prototype.answerPopulation = function(deferred,dataLinks) {
                         if (answers && answers.length > 0) {
                             var population = DBpediaUtils.extractDBpediaEntity(answers[0])
                             population = population.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            var entityLink = "http://dbpedia.org/resource/" + entity.replace(" ","_");
-                            var answer = "<a href='"+entityLink+"' target='_blank'>"+ entity.replace("_"," ") + "</a>'s population as of the 2010 census was " + population;
+                            var entityLink = "http://dbpedia.org/resource/" + entity.replace(" ", "_");
+                            var answer = "<a href='" + entityLink + "' target='_blank'>" + entity.replace("_", " ") + "</a>'s population as of the 2010 census was " + population;
                             deferred.resolve(answer);
+                        } else{
+                            deferred.resolve(null);
                         }
                     }, function(err) {
                         deferred.reject(err);
