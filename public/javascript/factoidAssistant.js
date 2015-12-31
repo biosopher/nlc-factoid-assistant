@@ -98,7 +98,7 @@ FactoidAssistant.App = function() {
         $("#factoidTypeDiv").html(json.top_class);
 
         if (!json.answer_text || json.answer_text.length == 0) {
-            json.answer_text = "Sorry. Factoid not yet unsupported, data not in Wikipedia, or more details needed in question.";
+            json.answer_text = "Sorry. Data not in Wikipedia, factoid not yet unsupported, or more details needed in question.";
         }
         $("#answerDiv").html(json.answer_text);
 

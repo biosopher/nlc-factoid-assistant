@@ -1,11 +1,34 @@
 var Q = require('q');
+var HttpUtils = require('../pipelines/http_utils');
 
-//************ Constructor **************//
-function DBpediaQuery() {
-    this.HttpUtils = require('../pipelines/http_utils');
+function performQueryAndResolve(dataLinks, type,isFilterEnglishOnly, deferred, getAnswerText) {
+    // Create type array and pass to next method
+    performQueryForArrayIndexAndResolve(dataLinks, [type],isFilterEnglishOnly, deferred, getAnswerText,0);
 }
+function performQueryForTypeArrayAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText) {
+    // Start with index=0 for type array
+    performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText,0);
+}
+function performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText, typeIndex) {
 
-DBpediaQuery.prototype.performQuery = function(entity, type,isFilterEnglishOnly) {
+    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
+    var entity = extractDBpediaEntity(dbpediaLink);
+    performQuery(entity,typeArr[typeIndex])
+        .then(function(answers) {
+            if (answers && answers.length > 0) {
+                var answer = getAnswerText(entity,answers,typeIndex);
+                deferred.resolve(answer);
+            }else if (typeIndex == typeArr.length - 1){
+                deferred.resolve(null);
+            }else{
+                typeIndex++
+                performQueryForArrayIndexAndResolve(dataLinks, typeArr,isFilterEnglishOnly, deferred, getAnswerText,typeIndex);
+            }
+        }, function(err) {
+            deferred.reject(err);
+        });
+}
+function performQuery(entity,type,isFilterEnglishOnly) {
 
     var deferred = Q.defer();
     var jsonResponse = {};
@@ -16,7 +39,7 @@ DBpediaQuery.prototype.performQuery = function(entity, type,isFilterEnglishOnly)
         filter = '%20FILTER %28langMatches%28lang%28%3Fresource%29%2C"en"%29%29'
     }
     var url = "http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select%20%3Fresource%20where%20%7B%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F"+entity+"%3E%20"+type+"%20%3Fresource"+filter+"%7D&format=json";
-    new this.HttpUtils().sendToServer("GET",url,null,null,null,null)
+    new HttpUtils().sendToServer("GET",url,null,null,null,null)
         .then(function (data) {
             console.log("dbpedia: " + JSON.stringify(data));
             if (data != '') {
@@ -45,6 +68,17 @@ DBpediaQuery.prototype.performQuery = function(entity, type,isFilterEnglishOnly)
     return deferred.promise;
 }
 
+function linkForEntity(entity) {
+    var resourceLink
+    if (entity.indexOf("dbpedia.org") < 0) {
+        // Handle entities being passed as resource urls already.
+        resourceLink = "http://dbpedia.org/resource/" + entity.replace(" ", "_");
+    }else{
+        resourceLink = entity;
+        entity = extractDBpediaEntity(resourceLink);
+    }
+    return "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a>";
+}
 function extractDBpediaEntity(dbpediaink) {
     var entity = null;
     if (dbpediaink && dbpediaink.indexOf("dbpedia.org")) {
@@ -86,7 +120,10 @@ function convertArrayToString(array) {
 }
 
 // Exported class
-module.exports.DBpediaQuery = DBpediaQuery;
-module.exports.convertArrayToString = convertArrayToString;
+module.exports.convertArrayToString = performQueryAndResolve;
 module.exports.convertDBpediaLinkArrayToLinksString = convertDBpediaLinkArrayToLinksString;
 module.exports.extractDBpediaEntity = extractDBpediaEntity;
+module.exports.linkForEntity = linkForEntity;
+module.exports.performQuery = performQuery;
+module.exports.performQueryAndResolve = performQueryAndResolve;
+module.exports.performQueryForTypeArrayAndResolve = performQueryForTypeArrayAndResolve;

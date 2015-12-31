@@ -15,8 +15,8 @@ router.get('/', function(req, res) {
     exampleQuestions.questions[7] = { text:"What was the construction date of the Empire State Building?"};
     exampleQuestions.questions[8] = { text:"How much is Bill Gates worth?"};
     exampleQuestions.questions[9] = { text:"How old is Sylvester Stallone?"};
-    exampleQuestions.questions[10] = { text:"When was Arnold_Schwarzenegger born?"};
-    exampleQuestions.questions[11] = { text:"Where was Tom Cruise born?"};
+    exampleQuestions.questions[10] = { text:"When was Arnold Schwarzenegger born?"};
+    exampleQuestions.questions[11] = { text:"What is Mark Zuckerberg net worth?"};
     exampleQuestions.questions[12] = { text:"Where did Isaac Newton attend college?"};
     exampleQuestions.questions[13] = { text:"What was Albert Einstein's alma mater?"};
     exampleQuestions.questions[14] = { text:"What is the population of the state of california?"};
@@ -26,6 +26,9 @@ router.get('/', function(req, res) {
     exampleQuestions.questions[18] = { text:"Who is the mayor of San Francisco, California?"};
     exampleQuestions.questions[19] = { text:"What are the symptoms of the common cold"};
     exampleQuestions.questions[20] = { text:"How many people live in Tokyo, Japan?"};
+    exampleQuestions.questions[21] = { text:"When was Kevin Bacon born?"};
+    exampleQuestions.questions[22] = { text:"How much is Donald Trump worth?"};
+    exampleQuestions.questions[23] = { text:"Where was Tom Cruise born?"};
 
     res.render('index', {exampleQuestions:JSON.stringify(exampleQuestions) });
 });

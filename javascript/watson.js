@@ -74,7 +74,7 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
                                     internalThis.handleError(res,"Failed to determine answer text for '" + userText + ". " + JSON.stringify(err));
                                 });
                         }else{
-                            internalThis.handleError(res,"Unsupported factoid.  No entities found");
+                            internalThis.handleError(res,"No entities found for factoid: "+nlcResponse.top_class+".  No entities found");
                         }
                     }, function(err) {
                         internalThis.handleError(res,"Failed to extract dbpedia pages for '" + req.body + ". " + JSON.stringify(err));
