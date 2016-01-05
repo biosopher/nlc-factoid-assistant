@@ -26,7 +26,7 @@ router.get('/', function(req, res) {
     exampleQuestions.questions[18] = { text:"Who is the mayor of San Francisco, California?"};
     exampleQuestions.questions[19] = { text:"What are the symptoms of the common cold?"};
     exampleQuestions.questions[20] = { text:"How many people live in Tokyo, Japan?"};
-    exampleQuestions.questions[21] = { text:"When was Kevin Bacon born?"};
+    exampleQuestions.questions[21] = { text:"What was Leonardo Da Vinci birthdate?"};
     exampleQuestions.questions[22] = { text:"How much is Donald Trump worth?"};
     exampleQuestions.questions[23] = { text:"Where was Tom Cruise born?"};
     exampleQuestions.questions[23] = { text:"What's the elevation of Mt Everest?"};

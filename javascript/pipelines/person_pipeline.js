@@ -41,7 +41,7 @@ PersonPipeline.prototype.getAnswerForIntent = function(intent, dataLinks) {
 
 PersonPipeline.prototype.answerBirthday = function(deferred,dataLinks) {
 
-    DBpediaUtils.performQueryAndResolve(dataLinks,["dbp%3AbirthDate"],false,false,deferred,function(entity,answers,typeIndex) {
+    DBpediaUtils.performQueryAndResolve(dataLinks,["dbo%3AbirthDate"],false,false,deferred,function(entity,answers,typeIndex) {
         var date = DateUtils.getDateAsString(answers[0]);
         var yearsSinceNow = DateUtils.getYearsSinceNow(answers[0]);
         return DBpediaUtils.linkForEntity(entity) + " is " + yearsSinceNow + " years old and was born on " + date;
