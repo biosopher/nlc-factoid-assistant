@@ -7,11 +7,25 @@ This demo combines Watson's [Natural Language Classifier](https://www.ibm.com/sm
 
 
 ### Getting Started
-...
-After that, access the application locally at port 8000: [http://localhost:8000](http://localhost:8000). 
+Let's start with a few types of standard factoid questions and determine how we might answer them:
+<br/>`What is the capital of *?`<br/>
+`Who is *'s spouse?`<br/>
+`When was * born?`<br/>
+`What is the birthplace of *?`<br/>
+`What's the population of *?`<br/>
+`.....`<br/>
 
+The full set of supported question types can be found in [data/nlc_factoid_training.csv](https://github.com/biosopher/nlc-factoid-assistant/blob/master/data/nlc_factoid_training.csv).  They are grouped into these category types:
+<br/>`health-condition_cause`<br/>
+`person-birthdate`          `person-birthplace`          `person-children`          `person-net_worth`<br/>
+`person-schooling`                    `person-spouse`          
+`place-areacode`          `place-capital`          `place-completion_date`          `place-governor_mayor`<br/>
+`place-height`          `place-population`<br/>
+#### More Details
+For more details about developing applications that use Watson Developer Cloud services in Bluemix, see [Getting started with Watson Developer Cloud and Bluemix](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/doc/getting_started/).
 
-
-
+#### License
+This sample code is licensed under Apache 2.0. Full license text is available in [LICENSE](https://github.com/watson-developer-cloud/natural-language-classifier-nodejs/blob/master/LICENSE).
+This sample uses [jquery](https://jquery.com/) which is MIT license.
 
 
