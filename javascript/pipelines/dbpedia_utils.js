@@ -9,8 +9,8 @@ function performQueryAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMi
 }
 function performQueryForArrayIndexAndResolve(dataLinks,typeArr,isFilterEnglishOnly,isAnswerMissingData,deferred,typeIndex,getAnswerText) {
 
-    var dbpediaLink = dataLinks.pages[0].dbpediaLink;
-    var entity = extractDBpediaEntity(dbpediaLink);
+    var dbpedia_resource = dataLinks.pages[0].dbpedia_resource;
+    var entity = extractDBpediaEntity(dbpedia_resource);
     performQuery(entity,typeArr[typeIndex],isFilterEnglishOnly)
         .then(function(answers) {
             if ((answers && answers.length > 0) || isAnswerMissingData) {
@@ -39,7 +39,6 @@ function performQuery(entity,type,isFilterEnglishOnly) {
     var url = "http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select%20%3Fresource%20where%20%7B%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F"+entity+"%3E%20"+type+"%20%3Fresource"+filter+"%7D&format=json";
     new HttpUtils().sendToServer("GET",url,null,null,null,null)
         .then(function (data) {
-            console.log("dbpedia: " + JSON.stringify(data));
             if (data != '') {
                 try {
                     if (data.results && data.results.bindings && data.results.bindings.length > 0) {
@@ -77,27 +76,27 @@ function linkForEntity(entity) {
     }
     return "<a href='" + resourceLink + "' target='_blank'>" + entity.replace("_", " ") + "</a>";
 }
-function extractDBpediaEntity(dbpediaink) {
+function extractDBpediaEntity(dbpediaLink) {
     var entity = null;
-    if (dbpediaink && dbpediaink.indexOf("dbpedia.org")) {
-        var index = dbpediaink.lastIndexOf("/")+1;
-        entity = dbpediaink.substr(index);
+    if (dbpediaLink && dbpediaLink.indexOf("dbpedia.org")) {
+        var index = dbpediaLink.lastIndexOf("/")+1;
+        entity = dbpediaLink.substr(index);
     }
     return entity;
 }
 
-function convertDBpediaLinkArrayToLinksString(dbpediaLinks) {
+function convertDBpediaLinkArrayToLinksString(dbpedia_resources) {
     var entityLinks = "";
-    for (var i = 0; i < dbpediaLinks.length; i++) {
+    for (var i = 0; i < dbpedia_resources.length; i++) {
         if (i > 0) {
-            if (i == dbpediaLinks.length-1) {
+            if (i == dbpedia_resources.length-1) {
                 entityLinks += " and "; // last answer
             }else {
                 entityLinks += ", ";
             }
         }
-        var entity = extractDBpediaEntity(dbpediaLinks[i])
-        entityLinks += "<a href='"+dbpediaLinks[i]+"' target='_blank'>"+ entity.replace("_"," ") + "</a>"
+        var entity = extractDBpediaEntity(dbpedia_resources[i])
+        entityLinks += "<a href='"+dbpedia_resources[i]+"' target='_blank'>"+ entity.replace("_"," ") + "</a>"
     }
     return entityLinks;
 }
