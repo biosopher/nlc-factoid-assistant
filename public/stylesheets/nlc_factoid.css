@@ -105,6 +105,9 @@ body div {
     margin-left: auto;
     margin-right: auto;
 }
+.exampleQuestionLink {
+    cursor: pointer;
+}
 
 /** Answer Div **/
 #answerDetailsDiv {
@@ -142,14 +145,6 @@ body div {
     padding-right: 5px;
 }
 #entityConceptsDBpediaDiv {
-    float: left;
-    padding-right: 5px;
-}
-#entityConceptsFreebaseDiv {
-    float: left;
-    padding-right: 5px;
-}
-#entityConceptsYagoDiv {
     float: left;
     padding-right: 5px;
 }
@@ -203,13 +198,6 @@ body div {
     line-height: 30px;
     width:100px;
     pointer-events: auto; /* Ensure user can click button */
-}
-/***  Floating Questions ***/
-.exampleQuestionLink, .exampleQuestionLink:visited, .exampleQuestionLink:hover, .exampleQuestionLink:active {
-    /*color: #00b2ef;*/
-    font-size: 16px;
-    cursor: pointer;
-    position:abolute;
 }
 #copyright {
     margin-top:5px;
