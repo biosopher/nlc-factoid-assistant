@@ -10,7 +10,8 @@
     },
     "nlu" : {
         // OPTIONAL: Used when running the app locally and NOT on Bluemix
-        "api_key": "LOCAL ALCHEMY API KEY"
+        "username": "LOCAL NLU SERVICE USERNAME",
+        "password": "LOCAL NLU SERVICE PASSWORD"
     },
     "cloudant" : {
         // REQUIRED IF AND ONLY IF you want to store your user submitted questions for later analysis
@@ -18,7 +19,7 @@
 
         // OPTIONAL: Used when running the app locally and NOT on Bluemix
         "url": "Remote Database URL",
-        "username": "LOCAL NLC SERVICE USERNAME",
-        "password": "LOCAL NLC SERVICE PASSWORD"
+        "username": "LOCAL CLOUDANT SERVICE USERNAME",
+        "password": "LOCAL CLOUDANT SERVICE PASSWORD"
     }
 }
