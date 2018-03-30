@@ -1,4 +1,7 @@
 declared-services:
+  demo_nlu:
+    label: natural_language_understanding
+    plan: standard
   demo_nlc:
     label: natural_language_classifier
     plan: standard
@@ -8,6 +11,7 @@ declared-services:
 
 applications:
 - services:
+  - demo_nlu
   - demo_nlc
   - demo_cloudant
   name: nlc-factoid-assistant
