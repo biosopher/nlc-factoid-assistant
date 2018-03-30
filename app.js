@@ -25,7 +25,7 @@ app.all('*', function(req,res,next) {
 });
 
 // Initialize Watson
-var WatsonUtils = require('./javascript/watson');
+var WatsonUtils = require('./javascript/watson_utils');
 config.watson = new WatsonUtils(app,config);
 
 // Setup routes
