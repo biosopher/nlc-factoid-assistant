@@ -3,9 +3,9 @@ var bluemix  = require('../config/bluemix');
 var extend   = require('util')._extend;
 var Q = require('q');
 
-function ConversationStore(watson,config) {
+function ConversationStore(watson) {
 
-    config.conversationStore = this;
+    watson.config.conversationStore = this;
     this.watson = watson;
 
     // If bluemix credentials (VCAP_SERVICES) are present then override the local credentials

@@ -26,22 +26,43 @@ NluUtils.prototype.extractLinkedData = function(userText) {
     var deferred = Q.defer();
 
     var internalThis = this;
-    this.extractEntities(userText)
-        .then(function(entitiesResponse) {
-
-            internalThis.extractConcepts(userText)
-                .then(function(conceptsResponse) {
-
-                    var dataLinks = internalThis.combineDataLinks(entitiesResponse, conceptsResponse);
-                    deferred.resolve(dataLinks);
-                }, function(err) {
-                    console.log("Failed to extract concepts for '" + userText + ". " + JSON.stringify(err));
-                    deferred.resolve(err);
-                });
+    this.analyze(userText)
+        .then(function(response) {
+            var dataLinks = internalThis.getDataLinks(response);
+            deferred.resolve(dataLinks);
         }, function(err) {
             console.log("Failed to extract entities for '" + userText + ". " + JSON.stringify(err));
             deferred.resolve(err);
         });
+    return deferred.promise;
+};
+
+NluUtils.prototype.analyze = function(userText) {
+
+    var deferred = Q.defer();
+    var params = {
+        text: userText
+    };
+
+    var parameters = {
+      'text': userText,
+      'features': {
+          'entities': {
+              'limit': 3
+          },
+          'concepts': {
+              'limit': 3
+          }
+      }
+    };
+
+    this.nluService.analyze(parameters, function(err, response) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(response);
+        }
+    });
     return deferred.promise;
 };
 
@@ -77,20 +98,17 @@ NluUtils.prototype.extractConcepts = function(userText) {
     return deferred.promise;
 };
 
-NluUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse) {
+NluUtils.prototype.getDataLinks = function(response) {
 
     var foundDataMap = {}; // Avoid returning duplicate data types
     var entitySummary = "";
     var dbpediaLinkSummary = "";
-    var freebaseLinkSummary = "";
-    var yagoLinkSummary = "";
-    var opencycLinkSummary = "";
     var dataLinks = {};
     dataLinks.pages = [];
-    if (entitiesResponse && entitiesResponse.entities) {
-        for (var i = 0; i < entitiesResponse.entities.length; i++) {
-            var entity = entitiesResponse.entities[i];
-            if (entity.disambiguated && entity.disambiguated.dbpedia) {
+    if (response && response.entities) {
+        for (var i = 0; i < response.entities.length; i++) {
+            var entity = response.entities[i];
+            if (entity.disambiguation && entity.disambiguation.dbpedia_resource) {
                 var page = {};
                 dataLinks.pages[dataLinks.pages.length] = page;
                 foundDataMap[entity.text] = page;
@@ -98,51 +116,26 @@ NluUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse
                 page.text = entity.text;
                 page.type = entity.type;
                 page.relevance = entity.relevance;
-                page.dbpediaLink = entity.disambiguated.dbpedia;
-                page.freebaseLink = entity.disambiguated.freebase;
-                page.yagoLink = entity.disambiguated.yago;
-                page.opencycLink = entity.disambiguated.opencyc;
+                page.dbpedia_resource = entity.disambiguation.dbpedia_resource;
 
                 entitySummary += page.text+" (e):<br>";
-                dbpediaLinkSummary += "<a href='"+page.dbpediaLink+"' target='_blank'>DBpedia</a><br>";
-                if (page.freebaseLink) {
-                    freebaseLinkSummary += "<a href='"+page.freebaseLink+"' target='_blank'>Freebase</a><br>";
-                }
-                if (page.yagoLink) {
-                    yagoLinkSummary += "<a href='"+page.yagoLink+"' target='_blank'>Yago</a><br>";
-                }
-                if (page.opencycLink) {
-                    opencycLinkSummary += "<a href='"+page.opencycLink+"' target='_blank'>OpenCyc</a><br>";
-                }
+                dbpediaLinkSummary += "<a href='"+page.dbpedia_resource+"' target='_blank'>DBpedia</a><br>";
             }
         }
     }
-    if (conceptsResponse && conceptsResponse.concepts && conceptsResponse.concepts.length > 0) {
-        for (var i = 0; i < conceptsResponse.concepts.length; i++) {
-            var concept = conceptsResponse.concepts[i];
-            if (concept.dbpedia && !foundDataMap[concept.text]) {
+    if (response && response.concepts && response.concepts.length > 0) {
+        for (var i = 0; i < response.concepts.length; i++) {
+            var concept = response.concepts[i];
+            if (concept.dbpedia_resource && !foundDataMap[concept.text]) {
                 var page = {};
                 foundDataMap[concept.text] = page;
                 dataLinks.pages[dataLinks.pages.length] = page;
                 page.text = concept.text;
-                page.type = concept.type;
                 page.relevance = concept.relevance;
-                page.dbpediaLink = concept.dbpedia;
-                page.freebaseLink = concept.freebase;
-                page.yagoLink = concept.yago;
-                page.opencycLink = concept.opencyc;
+                page.dbpedia_resource = concept.dbpedia_resource;
 
                 entitySummary += page.text + " (c):<br>";
-                dbpediaLinkSummary += "<a href='" + page.dbpediaLink + "' target='_blank'>DBpedia</a><br>";
-                if (page.freebaseLink) {
-                    freebaseLinkSummary += "<a href='" + page.freebaseLink + "' target='_blank'>Freebase</a><br>";
-                }
-                if (page.yagoLink) {
-                    yagoLinkSummary += "<a href='" + page.yagoLink + " target='_blank''>Yago</a><br>";
-                }
-                if (page.opencycLink) {
-                    opencycLinkSummary += "<a href='" + page.opencycLink + "' target='_blank'>OpenCyc</a><br>";
-                }
+                dbpediaLinkSummary += "<a href='" + page.dbpedia_resource + "' target='_blank'>DBpedia</a><br>";
             }
         }
     }
@@ -152,9 +145,6 @@ NluUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse
     }
     dataLinks.entity_summary = entitySummary;
     dataLinks.dbpedia_link_summary = dbpediaLinkSummary;
-    dataLinks.freebase_link_summary = freebaseLinkSummary;
-    dataLinks.yago_link_summary = yagoLinkSummary;
-    dataLinks.opencyc_link_summary = opencycLinkSummary;
     return dataLinks;
 };
 
