@@ -27,7 +27,7 @@ function WatsonUtils(app,config) {
     // Create Service utils classes
     this.conversationStore = new ConversationStore(this)
     this.nlcUtils = new NlcUtils(this)
-    this.alchemyUtils = new NluUtils(this)
+    this.nluUtils = new NluUtils(this)
     this.pipelines = new Pipelines()
 
     //************ Supported URL paths **************//
@@ -53,7 +53,7 @@ WatsonUtils.prototype.answerFactoid = function(req,res) {
         this.nlcUtils.determineUserIntent(userText)
             .then(function(nlcResponse) {
 
-                internalThis.alchemyUtils.extractLinkedData(userText)
+                internalThis.nluUtils.extractLinkedData(userText)
                     .then(function(dataLinks) {
                         if (dataLinks && dataLinks.pages.length > 0) {
                             var response = {};

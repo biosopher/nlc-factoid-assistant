@@ -4,13 +4,13 @@ var Q = require('q');
 var wdc = require('watson-developer-cloud');
 
 
-function AlchemyUtils(watson,callback) {
+function NluUtils(watson,callback) {
 
     // If bluemix credentials (VCAP_SERVICES) are present then override the local credentials
     watson.config.nlu = extend(watson.config.nlu, bluemix.getServiceCreds('natural_language_understanding')); // VCAP_SERVICES
 
     if (watson.config.nlu) {
-        this.alchemyService = wdc.alchemy_language({
+        this.nluService = wdc.alchemy_language({
             api_key: watson.config.nlu.api_key,
             version: 'v1'
         });
@@ -19,7 +19,7 @@ function AlchemyUtils(watson,callback) {
     }
 }
 
-AlchemyUtils.prototype.extractLinkedData = function(userText) {
+NluUtils.prototype.extractLinkedData = function(userText) {
 
     var deferred = Q.defer();
 
@@ -43,14 +43,14 @@ AlchemyUtils.prototype.extractLinkedData = function(userText) {
     return deferred.promise;
 };
 
-AlchemyUtils.prototype.extractEntities = function(userText) {
+NluUtils.prototype.extractEntities = function(userText) {
 
     var deferred = Q.defer();
     var params = {
         text: userText
     };
 
-    this.alchemyService.entities(params, function (err, response) {
+    this.nluService.entities(params, function (err, response) {
         if (err)
             deferred.reject(err);
         else
@@ -59,14 +59,14 @@ AlchemyUtils.prototype.extractEntities = function(userText) {
     return deferred.promise;
 };
 
-AlchemyUtils.prototype.extractConcepts = function(userText) {
+NluUtils.prototype.extractConcepts = function(userText) {
 
     var deferred = Q.defer();
     var params = {
         text: userText
     };
 
-    this.alchemyService.concepts(params, function (err, response) {
+    this.nluService.concepts(params, function (err, response) {
         if (err)
             deferred.reject(err);
         else
@@ -75,7 +75,7 @@ AlchemyUtils.prototype.extractConcepts = function(userText) {
     return deferred.promise;
 };
 
-AlchemyUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse) {
+NluUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResponse) {
 
     var foundDataMap = {}; // Avoid returning duplicate data types
     var entitySummary = "";
@@ -157,4 +157,4 @@ AlchemyUtils.prototype.combineDataLinks = function(entitiesResponse,conceptsResp
 };
 
 // Exported class
-module.exports = AlchemyUtils;
+module.exports = NluUtils;
