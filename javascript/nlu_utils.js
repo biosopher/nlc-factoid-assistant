@@ -1,8 +1,8 @@
 var bluemix  = require('../config/bluemix');
 var extend      = require('util')._extend;
 var Q = require('q');
-var wdc = require('watson-developer-cloud');
-
+var fs = require('fs');
+var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 
 function NluUtils(watson,callback) {
 
@@ -10,12 +10,14 @@ function NluUtils(watson,callback) {
     watson.config.nlu = extend(watson.config.nlu, bluemix.getServiceCreds('natural_language_understanding')); // VCAP_SERVICES
 
     if (watson.config.nlu) {
-        this.nluService = wdc.alchemy_language({
-            api_key: watson.config.nlu.api_key,
-            version: 'v1'
+        this.nluService = new NaturalLanguageUnderstandingV1({
+            username: watson.config.nlu.username,
+            password: watson.config.nlu.password,
+            version: '2017-02-27',
+            url: 'https://gateway.watsonplatform.net/natural-language-understanding/api/'
         });
     }else{
-        callback({errMessage : "NLU key not found"});
+        callback({errMessage : "NLU username and password not found"});
     }
 }
 
