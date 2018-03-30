@@ -92,9 +92,6 @@ FactoidAssistant.App = function() {
         $("#FactoidDivFactoid").toggleClass("hidden",false);
         $("#entityConceptsLeftDiv").html(json.data_links.entity_summary);
         $("#entityConceptsDBpediaDiv").html(json.data_links.dbpedia_link_summary);
-        $("#entityConceptsFreebaseDiv").html(json.data_links.freebaseLink_summary);
-        $("#entityConceptsYagoDiv").html(json.data_links.yago_link_summary);
-        $("#entityConceptsOpencycDiv").html(json.data_links.opencyc_link_summary);
         $("#factoidTypeDiv").html(json.top_class);
 
         if (!json.answer_text || json.answer_text.length == 0) {
