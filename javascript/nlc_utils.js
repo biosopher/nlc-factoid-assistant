@@ -12,7 +12,7 @@ function NlcUtils(watson) {
     // If bluemix credentials (VCAP_SERVICES) are present then override the local credentials
     watson.config.nlc = extend(watson.config.nlc, bluemix.getServiceCreds('natural_language_classifier')); // VCAP_SERVICES
 
-    // Setup our NLC + AlchemyAPI services running in the WDC module
+    // Setup our NLC services running in the WDC module
     this.nlcService = wdc.natural_language_classifier({
         username: watson.config.nlc.username,
         password: watson.config.nlc.password,
