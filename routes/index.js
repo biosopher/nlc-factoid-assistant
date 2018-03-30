@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
     exampleQuestions.questions[12] = { text:"Where did Isaac Newton attend college?"};
     exampleQuestions.questions[13] = { text:"What was Albert Einstein's alma mater?"};
     exampleQuestions.questions[14] = { text:"What is the population of the state of california?"};
-    exampleQuestions.questions[15] = { text:"What is the population of the New York City?"};
+    exampleQuestions.questions[15] = { text:"What is the population of New York City?"};
     exampleQuestions.questions[16] = { text:"What is the area code for Park City, Utah?"};
     exampleQuestions.questions[17] = { text:"Who is the governor of California?"};
     exampleQuestions.questions[18] = { text:"Who is the mayor of San Francisco, California?"};
