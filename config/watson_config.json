@@ -2,21 +2,21 @@
     "nlc" : {
         // REQUIRED whether running locally or not
         // "classifier_name" : "CLASSIFIER NAME",
-        "classifier_name" : "nlc_factoid",
+        "classifier_name" : "nlc-factoid-assistant",
 
-        // OPTIONAL: Used when running the app locally and NOT on BLuemix
+        // OPTIONAL: Used when running the app locally and NOT on Bluemix
         "username": "LOCAL NLC SERVICE USERNAME",
         "password": "LOCAL NLC SERVICE PASSWORD"
     },
-    "alchemyapi" : {
-        // OPTIONAL: Used when running the app locally and NOT on BLuemix
+    "nlu" : {
+        // OPTIONAL: Used when running the app locally and NOT on Bluemix
         "api_key": "LOCAL ALCHEMY API KEY"
     },
     "cloudant" : {
         // REQUIRED IF AND ONLY IF you want to store your user submitted questions for later analysis
-        "db_name": "Remote Database Name",
+        "db_name": "db_nlc_factoid_assistant",
 
-        // OPTIONAL: Used when running the app locally and NOT on BLuemix
+        // OPTIONAL: Used when running the app locally and NOT on Bluemix
         "url": "Remote Database URL",
         "username": "LOCAL NLC SERVICE USERNAME",
         "password": "LOCAL NLC SERVICE PASSWORD"
